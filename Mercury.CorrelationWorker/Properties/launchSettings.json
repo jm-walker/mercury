@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Mercury.CorrelationWorker": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}
