@@ -1,29 +1,45 @@
 ﻿using Mercury.Common.Models;
-using Mercury.Common.Services;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using StackExchange.Redis.Extensions.Core.Abstractions;
 
-namespace Mercury.JobPersist
+namespace Mercury.Common.Services
 {
+    /// <summary>
+    /// Redis Persistance Class
+    /// </summary>
     public class JobPersist : IJobPersist
     {
         private readonly ILogger<JobPersist> _logger;
         private readonly IRedisClient _client;
         private const string JOBTAG = "job";
         private const int EXPIRY = 600;
+        /// <summary>
+        /// Main ctor
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="client"></param>
         public JobPersist(ILogger<JobPersist> logger, IRedisClient client)
         {
             _logger = logger;
             _client = client;
         }
 
+        /// <summary>
+        /// Get job by Guid
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns></returns>
         public async Task<IJob?> GetJob(Guid guid)
         {
             var result = await _client.GetDefaultDatabase().GetAsync<Job>("job:" + guid.ToString());
             return result;
         }
 
+        /// <summary>
+        /// Get all entries tagged as jobs
+        /// </summary>
+        /// <returns></returns>
         public async Task<IEnumerable<IJob>> GetJobs()
         {
             var result = await _client.GetDefaultDatabase().GetByTagAsync<Job>(JOBTAG);
@@ -31,6 +47,11 @@ namespace Mercury.JobPersist
 
         }
 
+        /// <summary>
+        /// Save to the store
+        /// </summary>
+        /// <param name="job"></param>
+        /// <returns></returns>
         public async Task SaveJob(IJob job)
         {
             // TODO: Updating with this could cause race condition with multiple correlation agents

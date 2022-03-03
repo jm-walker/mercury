@@ -1,5 +1,4 @@
 ﻿using Mercury.Common.Services;
-using Mercury.MessageBroker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -8,8 +7,6 @@ using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.System.Text.Json;
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
 
 namespace Mercury.CorrelationWorker
 {
@@ -29,12 +26,16 @@ namespace Mercury.CorrelationWorker
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
+
+                    // Logging
                     services.AddLogging(cfg => cfg.AddSimpleConsole(opts =>
                     {
                         opts.IncludeScopes = true;
                         opts.SingleLine = true;
                         opts.TimestampFormat = "hh:mm:ss | ";
                     }));
+
+
                     // Redis Services
                     services.Configure<RedisConfiguration>(
                             hostContext.Configuration.GetRequiredSection("Redis")
@@ -59,6 +60,8 @@ namespace Mercury.CorrelationWorker
                                 var config = ctx.GetRequiredService<IOptions<MessageBrokerConfig>>().Value;
                                 return new ConnectionFactory() { HostName = config.Hostname, UserName = config.Username, Password = config.Password, Port = config.Port };
                             });
+
+                    // Rest of DI
                     services
                         .AddScoped<IJobPersist, JobPersist>()
                         .AddScoped<IMessageBroker, Broker>()

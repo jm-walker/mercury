@@ -15,9 +15,9 @@ namespace VirusTotal
             bool isIP = (hostType == UriHostNameType.IPv4 || hostType == UriHostNameType.IPv6);
 
             var client = VTClient.GetClient();
-            var req = isIP ? new RestRequest("ip_addresses/{id}") : new RestRequest("domain/{id}");
+            var req = isIP ? new RestRequest("ip_addresses/{id}") : new RestRequest("domains/{id}");
 
-            req.AddParameter("id", url);
+            req.AddParameter("id", url, ParameterType.UrlSegment);
             RestResponse result = await client.GetAsync(req);
 
             if( result == null ||! result.IsSuccessful)

@@ -79,7 +79,7 @@ namespace Mercury.Tests.Api
             IActionResult? result = await api.NewJob(new JobRequest() { Services = new List<string>(), Hostname = URL });
             
             
-            _jobHandlerMock.Verify(mock => mock.EnqueueRequest(It.IsAny<IJobRequest>()), Times.Never);
+            _jobHandlerMock.Verify(mock => mock.ProcessRequest(It.IsAny<IJobRequest>()), Times.Never);
 
             Assert.NotNull(result);
             Assert.True(result is ObjectResult);
@@ -106,6 +106,43 @@ namespace Mercury.Tests.Api
             var api = new JobsController(_loggerMock.Object, _jobHandlerMock.Object, _optionsStub);
             IActionResult? result = await api.NewJob(new JobRequest() { Services = new List<string>(), Hostname = URL });
 
+
+            Assert.NotNull(result);
+            Assert.True(result is OkObjectResult);
+            var objresult = result as OkObjectResult;
+            Assert.NotNull(objresult);
+
+
+            Assert.Equal(StatusCodes.Status200OK, objresult?.StatusCode);
+        }
+
+        [Fact]
+        public async Task Post_HandlesNullServiceList()
+        {
+            //_jobHandlerMock.Setup(jh => jh.EnqueueRequest(It.IsAny<IJobRequest>()));
+            var api = new JobsController(_loggerMock.Object, _jobHandlerMock.Object, _optionsStub);
+            IActionResult? result = await api.NewJob(new JobRequest() { Services = null, Hostname = "HOST" });
+
+
+            _jobHandlerMock.Verify(mock => mock.ProcessRequest(It.IsAny<IJobRequest>()), Times.Once);
+
+            Assert.NotNull(result);
+            Assert.True(result is OkObjectResult);
+            var objresult = result as OkObjectResult;
+            Assert.NotNull(objresult);
+            Assert.Equal(StatusCodes.Status200OK, objresult?.StatusCode);
+        }
+
+
+        [Fact]
+        public async Task Post_HandlesBlankServiceList()
+        {
+            //_jobHandlerMock.Setup(jh => jh.EnqueueRequest(It.IsAny<IJobRequest>()));
+            var api = new JobsController(_loggerMock.Object, _jobHandlerMock.Object, _optionsStub);
+            IActionResult? result = await api.NewJob(new JobRequest() { Services = new List<string>(), Hostname = "HOST" });
+
+
+            _jobHandlerMock.Verify(mock => mock.ProcessRequest(It.IsAny<IJobRequest>()), Times.Once);
 
             Assert.NotNull(result);
             Assert.True(result is OkObjectResult);

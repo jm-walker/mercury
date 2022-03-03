@@ -1,31 +1,34 @@
 ﻿using Mercury.Common.Models;
-using Mercury.Common.Services;
-using Mercury.MessageBroker.Exceptions;
 using Mercury.Plugin;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
 using System.Text;
 using System.Text.Json;
 
-namespace Mercury.MessageBroker
+namespace Mercury.Common.Services
 {
     public class Broker : IMessageBroker, IDisposable
     {
         private readonly ILogger<Broker> _logger;
-        IConnectionFactory _factory;
+        private readonly IConnectionFactory _factory;
         private readonly IConnection _connection;
         private readonly IModel _channel;
-        private readonly Dictionary<string, string> _consumerTags = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _consumerTags = new();
+
+        /// <summary>
+        /// Main Ctor - connects on instantiation
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="mqConnectionFactory"></param>
         public Broker(ILogger<Broker> logger, IConnectionFactory mqConnectionFactory)
         {
             _logger = logger;
             _factory = mqConnectionFactory;
-            if (_factory is ConnectionFactory)
+            if (_factory is ConnectionFactory cf)
             {
-                ((ConnectionFactory)_factory).DispatchConsumersAsync = true;
+                cf.DispatchConsumersAsync = true;
             }
             int conn = 0;
 
@@ -55,16 +58,30 @@ namespace Mercury.MessageBroker
 
         }
 
+        /// <summary>
+        /// Send a service request to the specific service queue
+        /// </summary>
+        /// <param name="msg"></param>
         public void EnqueueServiceRequest(IServiceJobMessage msg)
         {
             publish(msg.ID.ToString(), msg.Service, msg);
 
         }
+
+        /// <summary>
+        /// Send a completed message for the correlation service to pick up
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="ID"></param>
         public void EnqueueServiceResponse(IServiceResult msg, string ID)
         {
             publish(ID.ToString(), "correlation", msg);
         }
 
+        /// <summary>
+        /// Send a completed message
+        /// </summary>
+        /// <param name="job"></param>
         public void EnqueueJobCompletion(IJob job)
         {
             publish(job.ID.ToString(), $"completed:{job.ID}", job);
@@ -91,12 +108,21 @@ namespace Mercury.MessageBroker
                 );
         }
 
+        /// <summary>
+        /// IDispose
+        /// </summary>
         public void Dispose()
         {
             _channel.Dispose();
             _connection.Dispose();
+            GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// Register to listen for service messages
+        /// </summary>
+        /// <param name="service"></param>
+        /// <param name="receive"></param>
         public void RegisterServiceRequestListener(string service, Func<IServiceJobMessage, Task<bool>> receive)
         {
             RegisterListener<ServiceJobMessage>(
@@ -106,6 +132,10 @@ namespace Mercury.MessageBroker
                 durable: true);
         }
 
+        /// <summary>
+        /// Register to listen to service responses
+        /// </summary>
+        /// <param name="receive"></param>
         public void RegisterServiceResponseListener(Func<IServiceResult, string, Task<bool>> receive)
         {
             RegisterListener<ServiceResult>(
@@ -115,6 +145,11 @@ namespace Mercury.MessageBroker
                 durable: true);
         }
 
+        /// <summary>
+        /// REgister a completed listener
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <param name="receive"></param>
         public void RegisterJobCompleteListener(string ID, Func<IJob, Task<bool>> receive)
         {
             RegisterListener<Job>(
@@ -124,6 +159,7 @@ namespace Mercury.MessageBroker
                 durable: false
                 );
         }
+
         private void RegisterListener<T>(string queue, Func<T, string, Task<bool>> receive, bool exclusive = false, bool durable = true)
         {
             _logger.LogDebug($"Registering Listener for '{queue}'");
@@ -140,7 +176,7 @@ namespace Mercury.MessageBroker
                 try
                 {
 
-
+                    // Deserialize
                     _logger.LogDebug($"Received message on {queue}. Msg: {args.BasicProperties.MessageId}, CorrID: {args.BasicProperties.CorrelationId}");
 
                     var body = args.Body.ToArray();
@@ -155,8 +191,12 @@ namespace Mercury.MessageBroker
                         throw new FormatException("Dequeued message could not be deserialized properly. Resulted in null. \r\n" + message);
                     }
 
+                    // Call the registered function
                     bool complete = await receive(obj, args.BasicProperties.CorrelationId);
                     _logger.LogDebug($"{args.BasicProperties.MessageId}/{args.BasicProperties.CorrelationId} was processed. result was {complete}");
+
+
+                    // ACK if complete
                     if (complete)
                     {
                         _channel.BasicAck(deliveryTag: args.DeliveryTag, multiple: false);
@@ -170,6 +210,7 @@ namespace Mercury.MessageBroker
 
             };
 
+            // Register
             string tag = _channel.BasicConsume(queue: queue, autoAck: false, consumer: consumer);
             _consumerTags.Add(queue, tag);
             _logger.LogDebug($"Registered Listener for '{queue}'. Tag: {tag}");

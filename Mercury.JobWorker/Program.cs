@@ -1,5 +1,4 @@
 ﻿using Mercury.Common.Services;
-using Mercury.MessageBroker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -8,8 +7,6 @@ using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.System.Text.Json;
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
 
 namespace Mercury.JobWorker
 {
@@ -29,10 +26,7 @@ namespace Mercury.JobWorker
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
-                // Load DLLs dynamically into dictionary lookup
-
-               
-
+                    // Logging
                     services.AddLogging(cfg => cfg.AddSimpleConsole(opts =>
                     {
                         opts.IncludeScopes = true;
@@ -67,6 +61,8 @@ namespace Mercury.JobWorker
                                 var config = ctx.GetRequiredService<IOptions<MessageBrokerConfig>>().Value;
                                 return new ConnectionFactory() { HostName = config.Hostname, UserName = config.Username, Password = config.Password, Port=config.Port };
                             });
+
+                    // Rest of DI
                     services
                         .AddScoped<IRequestCache, Mercury.RequestCache.RequestCache>()
                         .AddScoped<IMessageBroker, Broker>()

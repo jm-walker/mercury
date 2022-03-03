@@ -8,6 +8,6 @@ namespace Mercury.JobWorker
 {
     public class WorkerConfig
     {
-        public string[] Plugins { get; set; } = new string[] { };
+        public string[] Plugins { get; set; } = Array.Empty<string>();
     }
 }

@@ -16,6 +16,8 @@ WORKDIR "/src/Mercury.JobWorker"
 RUN dotnet build "Mercury.JobWorker.csproj" -c Release -o /app/build
 WORKDIR "/src/GeoIP"
 RUN dotnet build "GeoIP.csproj" -c Release -o /app/build
+WORKDIR "/src/PortScan"
+RUN dotnet build "PortScan.csproj" -c Release -o /app/build
 WORKDIR "/src/VirusTotal"
 RUN dotnet restore "VirusTotal.csproj"
 RUN dotnet build "VirusTotal.csproj" -c Release -o /app/build
@@ -25,6 +27,8 @@ WORKDIR "/src/Mercury.JobWorker"
 RUN dotnet publish "Mercury.JobWorker.csproj" -c Release -o /app/publish
 WORKDIR "/src/GeoIP"
 RUN dotnet publish "GeoIP.csproj" -c Release -o /app/publish
+WORKDIR "/src/PortScan"
+RUN dotnet publish "PortScan.csproj" -c Release -o /app/publish
 WORKDIR "/src/VirusTotal"
 RUN dotnet publish "VirusTotal.csproj" -c Release -o /app/publish
 

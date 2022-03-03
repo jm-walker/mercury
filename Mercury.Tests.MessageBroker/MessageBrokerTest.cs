@@ -1,13 +1,10 @@
 ﻿using Mercury.Common.Models;
-using Mercury.MessageBroker;
+using Mercury.Common.Services;
 using Mercury.MessageBroker.Exceptions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using RabbitMQ.Client;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 

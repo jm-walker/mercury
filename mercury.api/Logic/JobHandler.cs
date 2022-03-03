@@ -7,12 +7,21 @@ using Mercury.Plugin;
 
 namespace Mercury.Api.Logic
 {
+    /// <summary>
+    /// Main logic for Job division and messaging
+    /// </summary>
     public class JobHandler : IJobHandler
     {
         private readonly IJobPersist _persistance;
         private readonly IMessageBroker _broker;
         private readonly ILogger _logger;
 
+        /// <summary>
+        /// Constructor and DI
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="persistance"></param>
+        /// <param name="broker"></param>
         public JobHandler(
             ILogger<JobHandler> logger,
             IJobPersist persistance,
@@ -45,7 +54,7 @@ namespace Mercury.Api.Logic
         public async Task<IJob> ProcessRequest(IJobRequest jobRequest)
         {
             Guid ID = Guid.NewGuid();
-            TaskCompletionSource<IJob> taskCompletionSource = new TaskCompletionSource<IJob>();
+            TaskCompletionSource<IJob> taskCompletionSource = new();
             
             //  Listen to correlation response queue
             _broker.RegisterJobCompleteListener(ID.ToString(), async (job) =>
@@ -69,6 +78,11 @@ namespace Mercury.Api.Logic
             {
                 throw new ArgumentNullException(nameof(jobRequest.Hostname));
             }
+
+            if( jobRequest.Services == null )
+            {
+                jobRequest.Services = new List<string>();
+            }
             // Add to persistance 
             await _persistance.SaveJob(new Job()
             {
@@ -88,7 +102,7 @@ namespace Mercury.Api.Logic
                     // Enqueue Message
                     _broker.EnqueueServiceRequest(new ServiceJobMessage(ID, svc, jobRequest.Hostname));
                 }
-                catch( InvalidQueueException ex )
+                catch( InvalidQueueException )
                 {
                     //TODO: Set failure message
                     _logger.LogInformation($"Queue was not available to proces {svc}");
@@ -96,11 +110,20 @@ namespace Mercury.Api.Logic
             }
         }
 
+        /// <summary>
+        /// Get single job from store
+        /// </summary>
+        /// <param name="jobId"></param>
+        /// <returns></returns>
         public async Task<IJob?> GetJob(Guid jobId)
         {
             return await _persistance.GetJob(jobId);
         }
 
+        /// <summary>
+        /// Get all jobs from the store
+        /// </summary>
+        /// <returns></returns>
         public async Task<IEnumerable<IJob>> GetJobs()
         {
             return await _persistance.GetJobs();

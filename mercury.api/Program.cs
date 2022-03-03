@@ -1,18 +1,13 @@
-using System.Text.Json.Serialization;
+using Mercury.Api;
 using Mercury.Api.Logic;
 using Mercury.Common.Services;
 using Microsoft.AspNetCore.Mvc;
-using StackExchange.Redis.Extensions.Core.Configuration;
-using StackExchange.Redis.Extensions.Core.Abstractions;
-using StackExchange.Redis.Extensions.Core.Implementations;
-using StackExchange.Redis.Extensions.Core;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
+using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.System.Text.Json;
-using Mercury.Api;
-using Mercury.Api.Models;
+using System.Text.Json.Serialization;
 using System.Xml.XPath;
-using System.Xml;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -122,10 +117,17 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 }
 
+// Output config if debugging
 foreach( var kvp in app.Configuration.AsEnumerable())
 {
-    app.Logger.LogDebug($" CONFIG | {kvp.Key} = {kvp.Value}");
+    if( kvp.Key.ToUpperInvariant().Contains("PASS"))
+    {
+        app.Logger.LogDebug(" CONFIG | {0} = ****", kvp.Key);
+    }
+    app.Logger.LogDebug(" CONFIG | {0} = {1}", kvp.Key, kvp.Value);
 }
+
+
 app.MapControllers();
 
 // Go

@@ -9,6 +9,9 @@ using Microsoft.Extensions.Options;
 
 namespace Mercury.Api.Controllers
 {
+    /// <summary>
+    /// Main Job API Controller
+    /// </summary>
     [ApiController]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/[controller]")]
@@ -18,6 +21,12 @@ namespace Mercury.Api.Controllers
         private readonly IJobHandler _jobHandler;
         private readonly ApiConfig _config;
 
+        /// <summary>
+        /// Jobs Controller constructor
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="jobHandler"></param>
+        /// <param name="config"></param>
         public JobsController(ILogger<JobsController> logger, IJobHandler jobHandler, IOptions<ApiConfig> config)
         {
             _logger = logger;
@@ -25,6 +34,11 @@ namespace Mercury.Api.Controllers
             _config = config.Value;
         }
 
+        /// <summary>
+        /// Retrieve Previously run job from the temporary store
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type=typeof(Job))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type=typeof(Error))]
@@ -42,6 +56,11 @@ namespace Mercury.Api.Controllers
 
         }
 
+        /// <summary>
+        /// Submit a job for processing
+        /// </summary>
+        /// <param name="req"></param>
+        /// <returns></returns>
         [HttpPost()]
         [ProducesResponseType(StatusCodes.Status200OK, Type=typeof(Job))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type=typeof(Error))]
@@ -62,10 +81,13 @@ namespace Mercury.Api.Controllers
             {
                 return new BadRequestObjectResult(new Error() { Message = "Bad IP Address" });
             }
-            
 
-            //TODO: Validate requested services exist? - ENUM, string dictionary, etc?
-            List<string> badServices = new List<string>();
+            if (req.Services == null || !req.Services.Any())
+            {
+                req.Services = _config.DefaultServices.ToList();
+            }
+
+            List<string> badServices = new();
             foreach( string s in req.Services )
             {
                 if( !_config.AllowedServices.Contains(s))
@@ -78,10 +100,7 @@ namespace Mercury.Api.Controllers
                 return new BadRequestObjectResult(new Error() { Message = $"Bad services requested: {String.Join(',', badServices)}" });
             }
 
-            if( req.Services.Count() <= 0 )
-            {
-                req.Services = _config.DefaultServices.ToList();
-            }
+            
 
 
             // Hand off to job handler
@@ -95,20 +114,19 @@ namespace Mercury.Api.Controllers
         }
 
 
-        private bool IsValidIPAddress(string IP)
+        private static bool IsValidIPAddress(string IP)
         {
             if( string.IsNullOrEmpty(IP))
             {
                 return false;
             }
 
-            IPAddress? ip = null;
-            if (!IPAddress.TryParse(IP, out ip))
+            if (!IPAddress.TryParse(IP, out IPAddress? ip))
             {
                 return false;
             }
 
-            if(ip.AddressFamily == AddressFamily.InterNetwork &&
+            if (ip.AddressFamily == AddressFamily.InterNetwork &&
                IP.Count( c => c == '.') != 3 )
             {
                 return false;

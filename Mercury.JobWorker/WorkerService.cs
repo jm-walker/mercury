@@ -21,7 +21,7 @@ namespace Mercury.JobWorker
         private readonly IMessageBroker _broker;
         private readonly IRequestCache _requestCache;
         private readonly WorkerConfig _config;
-        private readonly Dictionary<string, IPlugin> _plugins = new Dictionary<string, IPlugin>();
+        private readonly Dictionary<string, IPlugin> _plugins = new();
 
         public WorkerService(
             ILogger<WorkerService> logger,
@@ -35,27 +35,25 @@ namespace Mercury.JobWorker
             _config = config.Value;
         }
 
-        private async Task<IServiceResult> Ping(string host)
+        private static async Task<IServiceResult> Ping(string host)
         {
             const string SERVICE = "PING";
             try
             {
-                using (var pinger = new Ping())
+                using var pinger = new Ping();
+                PingReply reply = await pinger.SendPingAsync(host);
+                return new ServiceResult()
                 {
-                    PingReply reply = await pinger.SendPingAsync(host);
-                    return new ServiceResult()
+                    Service = SERVICE,
+                    Result = new
                     {
-                        Service = SERVICE,
-                        Result = new
-                        {
-                            rtt = reply.RoundtripTime,
-                            ip = reply.Address.ToString(),
-                            status = reply.Status.ToString()
-                        },
-                        ResultMessage = "Success",
-                        Status = ResultStatus.SUCCESS
-                    };
-                }
+                        rtt = reply.RoundtripTime,
+                        ip = reply.Address.ToString(),
+                        status = reply.Status.ToString()
+                    },
+                    ResultMessage = "Success",
+                    Status = ResultStatus.SUCCESS
+                };
             }
             catch (PingException ex)
             {
@@ -95,9 +93,9 @@ namespace Mercury.JobWorker
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            if (_broker is IDisposable)
+            if (_broker is IDisposable b)
             {
-                ((IDisposable)_broker).Dispose();
+                b.Dispose();
             }
             return Task.CompletedTask;
         }
@@ -131,7 +129,7 @@ namespace Mercury.JobWorker
             {
                 return await Ping(URL);
             }
-            else if( _plugins.Keys.Contains(service) )
+            else if( _plugins.ContainsKey(service) )
             {
                 return await _plugins[service].QueryURL(URL);
             }
@@ -153,7 +151,7 @@ namespace Mercury.JobWorker
             // Navigate up to the solution root
             string pluginLocation = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, relativePath.Replace('\\', Path.DirectorySeparatorChar)));
             Console.WriteLine($"Loading commands from: {pluginLocation}");
-            PluginLoadContext loadContext = new PluginLoadContext(pluginLocation);
+            PluginLoadContext loadContext = new(pluginLocation);
            
             return loadContext.LoadFromAssemblyPath(pluginLocation);
         }
@@ -161,21 +159,13 @@ namespace Mercury.JobWorker
         {
             int count = 0;
 
-
+            _logger.LogDebug($"Scanning {assembly.FullName}");
             foreach (Type type in assembly.GetTypes())
             {
-
-                _logger.LogDebug($"Checking type {type.Name} of {assembly.GetName().Name}");
-                _logger.LogDebug($"\tInterfaces: " + String.Join(',', type.GetInterfaces().Select(i => i.Name)));
-                _logger.LogDebug($"Found: {type.GetInterfaces().Contains(typeof(IPlugin))}");
-                _logger.LogDebug($"Found {type.GetInterfaces().FirstOrDefault()?.Module?.FullyQualifiedName} = {typeof(IPlugin).Module.FullyQualifiedName}: {type.GetInterfaces().FirstOrDefault() == typeof(IPlugin)}");
-                _logger.LogDebug($"{typeof(IPlugin).IsAssignableFrom(type)}");
-                
                 if(typeof(IPlugin).IsAssignableFrom(type)) 
                 {
                     _logger.LogDebug($"Found plugin in {type.Name}");
-                    IPlugin? result = Activator.CreateInstance(type) as IPlugin;
-                    if (result != null)
+                    if (Activator.CreateInstance(type) is IPlugin result)
                     {
                         count++;
                         yield return result;
@@ -185,7 +175,7 @@ namespace Mercury.JobWorker
             if( count == 0)
             {
                string availableTypes = string.Join(",", assembly.GetTypes().Select(t => t.FullName));
-               _logger.LogDebug($"Can't find any type which implements ICommand in {assembly} from {assembly.Location}.\n" +
+               _logger.LogDebug($"Can't find any type which implements IPlugin in {assembly} from {assembly.Location}.\n" +
                     $"Available types: {availableTypes}");
             }
         }

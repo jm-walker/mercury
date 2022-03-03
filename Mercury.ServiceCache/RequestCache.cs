@@ -5,6 +5,9 @@ using StackExchange.Redis.Extensions.Core.Abstractions;
 
 namespace Mercury.RequestCache
 {
+    /// <summary>
+    /// Quick Redis caching encapsulation
+    /// </summary>
     public class RequestCache : IRequestCache
     {
 
@@ -18,12 +21,24 @@ namespace Mercury.RequestCache
             _client = client;
         }
 
-
+        /// <summary>
+        /// Checks cache for URL/Service combo
+        /// </summary>
+        /// <param name="service"></param>
+        /// <param name="url"></param>
+        /// <returns></returns>
         public async Task<IServiceResult?> CheckCache(string service, string url)
         {
             return await _client.GetDefaultDatabase().GetAsync<ServiceResult?>(service + ":" + url);
         }
 
+        /// <summary>
+        /// Adds result to cache for 60 minutes
+        /// </summary>
+        /// <param name="service"></param>
+        /// <param name="url"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
         public async Task Add(string service, string url, IServiceResult result)
         {
             await _client.GetDefaultDatabase().AddAsync(

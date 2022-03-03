@@ -33,6 +33,10 @@ Place a .env file with MQ_USERNAME and MQ_PASSWORD. API Keys for plugins may als
 Then:
 ```docker compose up```
 
+URLS Available:
+- http://localhost:8888/swagger/index.html - Main API
+- http://localhost:15672/#/ - RabbitMQ UI
+- http://localhost:8881/ - REDIS UI
 
 ## Plugins
 

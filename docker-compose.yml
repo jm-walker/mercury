@@ -49,6 +49,7 @@ services:
       MQ__Password: $MQ_PASSWORD
       GEOIP_KEY: $GEOIP_KEY
       VIRUSTOTAL_API_KEY: $VIRUSTOTAL_API_KEY
+      VIEWDNS_KEY: $VIEWDNS_KEY
     deploy:
             replicas: 2
     depends_on: 
