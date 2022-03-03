@@ -1,0 +1,103 @@
+version: '3.4'
+
+services:
+  mercury.api:
+    image: ${DOCKER_REGISTRY-}mercuryapi
+    build:
+      context: .
+      dockerfile: mercury.api/Dockerfile
+    ports:
+      - 80
+    environment:
+      MQ__Hostname: rabbitmq
+      MQ__Port:  5672
+      MQ__Username: $MQ_USERNAME
+      MQ__Password: $MQ_PASSWORD
+    depends_on: 
+        - rabbitmq
+        - redis
+    deploy:
+            replicas: 2
+    networks:
+        - api.network
+    
+  mercury.correlationworker:
+    image: ${DOCKER_REGISTRY-}mercurycorrelationworker
+    build:
+      context: .
+      dockerfile: Mercury.CorrelationWorker/Dockerfile
+    environment:
+      MQ__Hostname: rabbitmq
+      MQ__Port:  5672
+      MQ__Username: $MQ_USERNAME
+      MQ__Password: $MQ_PASSWORD
+    depends_on: 
+        - rabbitmq
+        - redis
+    networks:
+        - api.network
+
+  mercury.jobworker:
+    image: ${DOCKER_REGISTRY-}mercuryjobworker
+    build:
+      context: .
+      dockerfile: Mercury.JobWorker/Dockerfile
+    environment:
+      MQ__Hostname: rabbitmq
+      MQ__Port:  5672
+      MQ__Username: $MQ_USERNAME
+      MQ__Password: $MQ_PASSWORD
+      GEOIP_KEY: $GEOIP_KEY
+      VIRUSTOTAL_API_KEY: $VIRUSTOTAL_API_KEY
+    deploy:
+            replicas: 2
+    depends_on: 
+        - rabbitmq
+    networks:
+        - api.network
+  nginx:
+    image: nginx:latest
+    volumes:
+        - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on: 
+        - mercury.api
+    ports: 
+        - 8888:80
+    networks: 
+        - api.network
+  redis:
+    image: redis:6-alpine
+    container_name: 'mercury-redis'
+    hostname: redis
+    ports:
+      - '6379:6379'
+    networks:
+      - api.network
+  redisui:
+    image: rediscommander/redis-commander:latest
+    hostname: redisui
+    environment:
+        REDIS_HOST: redis
+        REDIS_PORT: 6379
+    ports:
+      - 8881:8081
+    networks:
+      - api.network
+        
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'mercury-mq'
+    hostname: 'rabbitmq'
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+        RABBITMQ_DEFAULT_USER: $MQ_USERNAME
+        RABBITMQ_DEFAULT_PASS: $MQ_PASSWORD
+    networks:
+      - api.network
+ 
+networks:
+  api.network:
+
+

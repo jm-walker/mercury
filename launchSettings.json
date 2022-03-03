@@ -1,0 +1,20 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "composeLaunchAction": "LaunchBrowser",
+      "composeLaunchServiceName": "mercury.api",
+      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/swagger",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "mercury.api": "StartDebugging",
+        "mercury.correlationworker": "StartDebugging",
+        "mercury.jobworker": "StartDebugging",
+        "nginx": "StartWithoutDebugging",
+        "rabbitmq": "StartWithoutDebugging",
+        "redis": "StartWithoutDebugging",
+        "redisui": "StartWithoutDebugging"
+      }
+    }
+  }
+}
