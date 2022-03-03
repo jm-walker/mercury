@@ -1,7 +1,8 @@
-﻿namespace Mercury.IPlugin
+﻿namespace Mercury.Plugin
 {
     public interface IPlugin
     {
-        string QueryURL(string url);
+        public string Name { get; }
+        Task<IServiceResult> QueryURL(string url);
     }
 }

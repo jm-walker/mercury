@@ -3,6 +3,7 @@
 ##
 ## Adapted from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+.env
 .vs/
 
 # User-specific files

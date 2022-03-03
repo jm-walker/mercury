@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using System.ComponentModel.DataAnnotations;
 namespace Mercury.Common.Enums
 {
     public enum JobStatus
     {
+
         [Display(Name = "Success")]
         Success,
 
@@ -16,6 +11,9 @@ namespace Mercury.Common.Enums
         Failure,
 
         [Display(Name = "Processing")]
-        Processing
+        Processing,
+
+        [Display(Name = "Partial")]
+        Partial
     }
 }

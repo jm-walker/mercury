@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Mercury.Plugin;
 
 namespace Mercury.Common.Services
 {
     public interface IRequestCache
     {
+        Task<IServiceResult?> CheckCache(string service, string url);
+        Task Add(string service, string url, IServiceResult result);
     }
 }

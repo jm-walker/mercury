@@ -1,45 +1,69 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Mercury.Common.Services;
+using Mercury.MessageBroker;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using RabbitMQ.Client;
+using StackExchange.Redis.Extensions.Core.Configuration;
+using StackExchange.Redis.Extensions.System.Text.Json;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-public class Program
+
+namespace Mercury.CorrelationWorker
 {
-    static async Task Main(string[] args)
+    public class Program
     {
-        await CreateHostBuilder(args).Build().RunAsync();
-    }
+        static async Task Main(string[] args)
+        {
+            await CreateHostBuilder(args).Build().RunAsync();
+        }
 
-    public static IHostBuilder CreateHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
-            .ConfigureAppConfiguration((context, builder) =>
-            {
-                builder.AddJsonFile("appsettings.local.json", optional: false);
-            })
-            .ConfigureServices((hostContext, services) =>
-            {
-                    /* services
-                         .Configure<OnBaseOptions>(hostContext.Configuration.GetSection(nameof(OnBaseOptions)))
-                         .Configure<KeywordChangeServiceOptions>(hostContext.Configuration.GetSection(nameof(KeywordChangeServiceOptions)))
-                         .Configure<KeywordChangePersistOptions>(hostContext.Configuration.GetSection(nameof(KeywordChangePersistOptions)))
-                         .Configure<QueueOptions>(hostContext.Configuration.GetSection(nameof(QueueOptions)));*/
-
-                services.AddLogging(cfg => cfg.AddSimpleConsole(opts =>
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((context, builder) =>
                 {
-                    opts.IncludeScopes = true;
-                    opts.SingleLine = true;
-                    opts.TimestampFormat = "hh:mm:ss | ";
-                }));
+                    builder.AddJsonFile("appsettings.json", optional: false);
+                    builder.AddEnvironmentVariables();
+                })
+                .ConfigureServices((hostContext, services) =>
+                {
+                    services.AddLogging(cfg => cfg.AddSimpleConsole(opts =>
+                    {
+                        opts.IncludeScopes = true;
+                        opts.SingleLine = true;
+                        opts.TimestampFormat = "hh:mm:ss | ";
+                    }));
+                    // Redis Services
+                    services.Configure<RedisConfiguration>(
+                            hostContext.Configuration.GetRequiredSection("Redis")
+                    );
 
-                    /* services
-                         .AddSingleton<IProducerConsumerCollection<long>, ConcurrentQueue<long>>()
-                         .AddSingleton<IKeywordChangePersist, KeywordChangePersist>()
-                         .AddScoped<IDatabaseAccess, DatabaseAccess>()
-                         .AddScoped<IQueuer, Queuer>()
-                         .AddScoped<IUpdateDocument, UpdateDocument>()
-                         .AddHostedService<KeywordChangeService>()
-                         .AddHostedService<DocumentUpdateService>();*/
-            });
+                    services
+                            .AddSingleton((ctx) =>
+                            {
+                                return ctx.GetRequiredService<IOptions<RedisConfiguration>>().Value;
+                            });
+
+                    services.AddStackExchangeRedisExtensions<SystemTextJsonSerializer>((ctx) => new List<RedisConfiguration> { ctx.GetRequiredService<IOptions<RedisConfiguration>>().Value });
+
+
+                    // MQ Services
+                    services.Configure<MessageBrokerConfig>(
+                            hostContext.Configuration.GetRequiredSection("MQ")
+                    );
+                    services
+                            .AddSingleton<IConnectionFactory, ConnectionFactory>((ctx) =>
+                            {
+                                var config = ctx.GetRequiredService<IOptions<MessageBrokerConfig>>().Value;
+                                return new ConnectionFactory() { HostName = config.Hostname, UserName = config.Username, Password = config.Password, Port = config.Port };
+                            });
+                    services
+                        .AddScoped<IJobPersist, JobPersist>()
+                        .AddScoped<IMessageBroker, Broker>()
+                        .AddHostedService<CorrelationService>();
+
+                });
+    }
 }
-

@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mercury.Common.Models
+namespace Mercury.JobWorker
 {
-    public interface IStatusMessage
+    public class WorkerConfig
     {
+        public string[] Plugins { get; set; } = new string[] { };
     }
 }

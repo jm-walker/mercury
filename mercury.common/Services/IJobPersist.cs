@@ -1,16 +1,11 @@
-﻿using Mercury.Api.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Mercury.Common.Models;
 
 namespace Mercury.Common.Services
 {
     public interface IJobPersist
     {
-        void SaveJob(IJob job);
-        IJob? GetJob(Guid guid);
-        IEnumerable<IJob> GetJobs();
+        Task SaveJob(IJob job);
+        Task<IJob?> GetJob(Guid guid);
+        Task<IEnumerable<IJob>> GetJobs();
     }
 }

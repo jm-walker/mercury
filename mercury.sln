@@ -15,30 +15,39 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mercury.Common", "mercury.c
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "plugins", "plugins", "{6D92E72A-9DBD-436B-9871-8F3AEC38226D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mercury.Api", "mercury.api\Mercury.Api.csproj", "{D18EE4F3-FA1E-47AA-B33A-844C4C8F0CAD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mercury.Api", "mercury.api\Mercury.Api.csproj", "{D18EE4F3-FA1E-47AA-B33A-844C4C8F0CAD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mercury.JobPersist", "Mercury.JobPersist\Mercury.JobPersist.csproj", "{6EB4657C-9406-442A-8C54-6B778914B779}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mercury.JobPersist", "Mercury.JobPersist\Mercury.JobPersist.csproj", "{6EB4657C-9406-442A-8C54-6B778914B779}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mercury.JobWorker", "Mercury.JobWorker\Mercury.JobWorker.csproj", "{F9CB038A-EBE6-4789-9A7A-AEA5DD390B45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mercury.JobWorker", "Mercury.JobWorker\Mercury.JobWorker.csproj", "{F9CB038A-EBE6-4789-9A7A-AEA5DD390B45}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mercury.Plugin", "Mercury.IPlugin\Mercury.Plugin.csproj", "{E6B38AB0-9FC3-45DC-A85E-74B87E47E97F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mercury.Plugin", "Mercury.IPlugin\Mercury.Plugin.csproj", "{E6B38AB0-9FC3-45DC-A85E-74B87E47E97F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mercury.Tests.JobWorker", "Mercury.Tests.JobWorker\Mercury.Tests.JobWorker.csproj", "{CE1B5DA4-B01F-4383-99C6-6A67C1D055D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mercury.Tests.JobWorker", "Mercury.Tests.JobWorker\Mercury.Tests.JobWorker.csproj", "{CE1B5DA4-B01F-4383-99C6-6A67C1D055D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mercury.Tests.Api", "Mercury.Tests.Api\Mercury.Tests.Api.csproj", "{40A54F37-72E6-4E57-B28B-0B3FFD0E8628}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mercury.Tests.Api", "Mercury.Tests.Api\Mercury.Tests.Api.csproj", "{40A54F37-72E6-4E57-B28B-0B3FFD0E8628}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mercury.Tests.JobPersist", "Mercury.Tests.JobPersist\Mercury.Tests.JobPersist.csproj", "{F429521F-5754-4E97-8174-5CE82C4E7D3C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mercury.CorrelationWorker", "Mercury.CorrelationWorker\Mercury.CorrelationWorker.csproj", "{5D9409DC-7A17-4678-B2B9-1B36FB6E69A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mercury.CorrelationWorker", "Mercury.CorrelationWorker\Mercury.CorrelationWorker.csproj", "{5D9409DC-7A17-4678-B2B9-1B36FB6E69A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mercury.RequestCache", "Mercury.ServiceCache\Mercury.RequestCache.csproj", "{96490DE7-1A2E-4046-BF99-999FDE7CC18E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mercury.RequestCache", "Mercury.ServiceCache\Mercury.RequestCache.csproj", "{96490DE7-1A2E-4046-BF99-999FDE7CC18E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mercury.MessageBroker", "Mercury.MessageBroker\Mercury.MessageBroker.csproj", "{B08FADCD-85BF-4408-B081-91C69CABF307}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mercury.MessageBroker", "Mercury.MessageBroker\Mercury.MessageBroker.csproj", "{B08FADCD-85BF-4408-B081-91C69CABF307}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{82D5DD51-74C9-4C33-9161-99B5CE397A2F}"
 	ProjectSection(SolutionItems) = preProject
+		.env = .env
 		.gitignore = .gitignore
+		nginx.conf = nginx.conf
+		ReadMe.md = ReadMe.md
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mercury.Tests.MessageBroker", "Mercury.Tests.MessageBroker\Mercury.Tests.MessageBroker.csproj", "{B5C155D7-AD1D-467B-A0D4-0DAB63DCF3C2}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{BC509B79-F187-4BC5-B3F0-5C970DCF783B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GeoIP", "GeoIP\GeoIP.csproj", "{B5DE9070-E6BE-4DD8-A1B2-044093E1EA98}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirusTotal", "VirusTotal\VirusTotal.csproj", "{729F94EE-6785-4D09-8605-EF2C0D3A50E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -74,10 +83,6 @@ Global
 		{40A54F37-72E6-4E57-B28B-0B3FFD0E8628}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40A54F37-72E6-4E57-B28B-0B3FFD0E8628}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40A54F37-72E6-4E57-B28B-0B3FFD0E8628}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F429521F-5754-4E97-8174-5CE82C4E7D3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F429521F-5754-4E97-8174-5CE82C4E7D3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F429521F-5754-4E97-8174-5CE82C4E7D3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F429521F-5754-4E97-8174-5CE82C4E7D3C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5D9409DC-7A17-4678-B2B9-1B36FB6E69A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5D9409DC-7A17-4678-B2B9-1B36FB6E69A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D9409DC-7A17-4678-B2B9-1B36FB6E69A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -90,6 +95,22 @@ Global
 		{B08FADCD-85BF-4408-B081-91C69CABF307}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B08FADCD-85BF-4408-B081-91C69CABF307}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B08FADCD-85BF-4408-B081-91C69CABF307}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5C155D7-AD1D-467B-A0D4-0DAB63DCF3C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5C155D7-AD1D-467B-A0D4-0DAB63DCF3C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5C155D7-AD1D-467B-A0D4-0DAB63DCF3C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5C155D7-AD1D-467B-A0D4-0DAB63DCF3C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC509B79-F187-4BC5-B3F0-5C970DCF783B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC509B79-F187-4BC5-B3F0-5C970DCF783B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC509B79-F187-4BC5-B3F0-5C970DCF783B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC509B79-F187-4BC5-B3F0-5C970DCF783B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5DE9070-E6BE-4DD8-A1B2-044093E1EA98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5DE9070-E6BE-4DD8-A1B2-044093E1EA98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5DE9070-E6BE-4DD8-A1B2-044093E1EA98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5DE9070-E6BE-4DD8-A1B2-044093E1EA98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{729F94EE-6785-4D09-8605-EF2C0D3A50E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{729F94EE-6785-4D09-8605-EF2C0D3A50E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{729F94EE-6785-4D09-8605-EF2C0D3A50E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{729F94EE-6785-4D09-8605-EF2C0D3A50E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -99,13 +120,15 @@ Global
 		{D18EE4F3-FA1E-47AA-B33A-844C4C8F0CAD} = {49CD2BE4-814F-4C38-97D9-472F7CFA3E02}
 		{6EB4657C-9406-442A-8C54-6B778914B779} = {2C83933A-D6CB-43ED-99FA-3B05368490BA}
 		{F9CB038A-EBE6-4789-9A7A-AEA5DD390B45} = {CAD5A903-F4A1-4C3F-851A-C5F0438D35DE}
-		{E6B38AB0-9FC3-45DC-A85E-74B87E47E97F} = {CAD5A903-F4A1-4C3F-851A-C5F0438D35DE}
+		{E6B38AB0-9FC3-45DC-A85E-74B87E47E97F} = {2C83933A-D6CB-43ED-99FA-3B05368490BA}
 		{CE1B5DA4-B01F-4383-99C6-6A67C1D055D8} = {EE05330A-0280-462A-9D39-E203DD8A310F}
 		{40A54F37-72E6-4E57-B28B-0B3FFD0E8628} = {EE05330A-0280-462A-9D39-E203DD8A310F}
-		{F429521F-5754-4E97-8174-5CE82C4E7D3C} = {EE05330A-0280-462A-9D39-E203DD8A310F}
 		{5D9409DC-7A17-4678-B2B9-1B36FB6E69A2} = {CAD5A903-F4A1-4C3F-851A-C5F0438D35DE}
-		{96490DE7-1A2E-4046-BF99-999FDE7CC18E} = {CAD5A903-F4A1-4C3F-851A-C5F0438D35DE}
+		{96490DE7-1A2E-4046-BF99-999FDE7CC18E} = {2C83933A-D6CB-43ED-99FA-3B05368490BA}
 		{B08FADCD-85BF-4408-B081-91C69CABF307} = {2C83933A-D6CB-43ED-99FA-3B05368490BA}
+		{B5C155D7-AD1D-467B-A0D4-0DAB63DCF3C2} = {EE05330A-0280-462A-9D39-E203DD8A310F}
+		{B5DE9070-E6BE-4DD8-A1B2-044093E1EA98} = {6D92E72A-9DBD-436B-9871-8F3AEC38226D}
+		{729F94EE-6785-4D09-8605-EF2C0D3A50E8} = {6D92E72A-9DBD-436B-9871-8F3AEC38226D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9A25D955-7849-48EE-8512-7B0DDF13F8EB}

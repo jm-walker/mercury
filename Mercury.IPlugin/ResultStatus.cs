@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Mercury.IPlugin
+﻿namespace Mercury.Plugin
 {
     public enum ResultStatus
     {
+        PROCESSING,
         SUCCESS,
         FAILURE,
         PARTIAL

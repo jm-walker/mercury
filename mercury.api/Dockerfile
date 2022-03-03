@@ -6,10 +6,14 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["Mercury.Api/Mercury.Api.csproj", "Mercury.Api/"]
-RUN dotnet restore "Mercury.Api/Mercury.Api.csproj"
+COPY ["mercury.api/Mercury.Api.csproj", "mercury.api/"]
+COPY ["Mercury.IPlugin/Mercury.Plugin.csproj", "Mercury.IPlugin/"]
+COPY ["Mercury.JobPersist/Mercury.JobPersist.csproj", "Mercury.JobPersist/"]
+COPY ["mercury.common/Mercury.Common.csproj", "mercury.common/"]
+COPY ["Mercury.MessageBroker/Mercury.MessageBroker.csproj", "Mercury.MessageBroker/"]
+RUN dotnet restore "mercury.api/Mercury.Api.csproj"
 COPY . .
-WORKDIR "/src/Mercury.Api"
+WORKDIR "/src/mercury.api"
 RUN dotnet build "Mercury.Api.csproj" -c Release -o /app/build
 
 FROM build AS publish

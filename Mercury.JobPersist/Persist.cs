@@ -1,23 +1,47 @@
-﻿using Mercury.Api.Models;
+﻿using Mercury.Common.Models;
+using Mercury.Common.Services;
+using Microsoft.Extensions.Logging;
+using StackExchange.Redis;
+using StackExchange.Redis.Extensions.Core.Abstractions;
 
-namespace Mercury.Common.Services
+namespace Mercury.JobPersist
 {
-    public class Persist : IJobPersist
+    public class JobPersist : IJobPersist
     {
-
-        public IJob? GetJob(Guid guid)
+        private readonly ILogger<JobPersist> _logger;
+        private readonly IRedisClient _client;
+        private const string JOBTAG = "job";
+        private const int EXPIRY = 600;
+        public JobPersist(ILogger<JobPersist> logger, IRedisClient client)
         {
-            throw new NotImplementedException();
+            _logger = logger;
+            _client = client;
         }
 
-        public IEnumerable<IJob> GetJobs()
+        public async Task<IJob?> GetJob(Guid guid)
         {
-            throw new NotImplementedException();
+            var result = await _client.GetDefaultDatabase().GetAsync<Job>("job:" + guid.ToString());
+            return result;
         }
 
-        public void SaveJob(IJob job)
+        public async Task<IEnumerable<IJob>> GetJobs()
         {
-            throw new NotImplementedException();
+            var result = await _client.GetDefaultDatabase().GetByTagAsync<Job>(JOBTAG);
+            return result.Where(x => x != null) as IEnumerable<Job>;
+
+        }
+
+        public async Task SaveJob(IJob job)
+        {
+            // TODO: Updating with this could cause race condition with multiple correlation agents
+            await _client.GetDefaultDatabase().AddAsync(
+                "job:" + job.ID.ToString(),
+                job,
+                DateTimeOffset.Now.AddSeconds(EXPIRY), //Only keep job data around for a bit  TODO: Make Configurable
+                When.Always,
+                CommandFlags.None,
+                new HashSet<string>() { JOBTAG }
+            );
         }
     }
 }

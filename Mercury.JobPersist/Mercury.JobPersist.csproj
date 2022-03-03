@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="StackExchange.Redis" Version="2.2.88" />
+    <PackageReference Include="StackExchange.Redis.Extensions.AspNetCore" Version="8.0.4" />
+    <PackageReference Include="StackExchange.Redis.Extensions.Core" Version="8.0.4" />
+    <PackageReference Include="StackExchange.Redis.Extensions.System.Text.Json" Version="8.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\mercury.common\Mercury.Common.csproj" />
   </ItemGroup>
 
